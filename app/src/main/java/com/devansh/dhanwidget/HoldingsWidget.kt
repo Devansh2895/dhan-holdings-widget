@@ -178,7 +178,7 @@ class HoldingsWidget : GlanceAppWidget() {
                 )
                 else -> Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 18.dp)) {
                     Text(
-                        text = if (masked) "•••••••" else "₹%,.0f".format(summary.currentValue),
+                        text = if (masked) "•  •  •  •  •  •  •" else "₹%,.0f".format(summary.currentValue),
                         style = TextStyle(
                             fontWeight = FontWeight.Medium,
                             fontFamily = NumberFont,
@@ -235,7 +235,7 @@ class HoldingsWidget : GlanceAppWidget() {
             Spacer(modifier = GlanceModifier.height(4.dp))
             Text(
                 text = if (masked) {
-                    "•••• (%+.2f%%)".format(pct)
+                    "•  •  •  • (%+.2f%%)".format(pct)
                 } else {
                     "₹%+,.0f (%+.2f%%)".format(value, pct)
                 },
