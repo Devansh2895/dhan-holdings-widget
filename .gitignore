@@ -1,0 +1,13 @@
+# hunkwise
+.vscode/hunkwise/
+
+# Android/Gradle
+*.iml
+.gradle/
+.idea/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
