@@ -28,6 +28,7 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
@@ -97,7 +98,7 @@ class HoldingsWidget : GlanceAppWidget() {
                 .fillMaxSize()
                 .background(palette.background)
                 .cornerRadius(20.dp)
-                .padding(12.dp),
+                .padding(16.dp),
         ) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
@@ -105,7 +106,12 @@ class HoldingsWidget : GlanceAppWidget() {
             ) {
                 Text(
                     text = if (viewMode == "STOCKS") "Stocks" else "ETFs",
-                    style = TextStyle(fontWeight = FontWeight.Normal, fontFamily = NumberFont, color = palette.onBackground),
+                    style = TextStyle(
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = NumberFont,
+                        fontSize = 14.sp,
+                        color = palette.onBackground,
+                    ),
                 )
                 Spacer(modifier = GlanceModifier.width(6.dp))
                 Text(
@@ -170,17 +176,17 @@ class HoldingsWidget : GlanceAppWidget() {
                     modifier = GlanceModifier.padding(top = 12.dp),
                     style = TextStyle(color = palette.muted),
                 )
-                else -> Column(modifier = GlanceModifier.defaultWeight().fillMaxWidth().padding(top = 14.dp)) {
+                else -> Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 18.dp)) {
                     Text(
                         text = if (masked) "•••••••" else "₹%,.0f".format(summary.currentValue),
                         style = TextStyle(
-                            fontWeight = FontWeight.Normal,
+                            fontWeight = FontWeight.Medium,
                             fontFamily = NumberFont,
-                            fontSize = 26.sp,
+                            fontSize = 32.sp,
                             color = palette.onBackground,
                         ),
                     )
-                    Spacer(modifier = GlanceModifier.defaultWeight())
+                    Spacer(modifier = GlanceModifier.height(20.dp))
                     Row(modifier = GlanceModifier.fillMaxWidth()) {
                         StatBlock(
                             label = "1D returns",
@@ -224,8 +230,9 @@ class HoldingsWidget : GlanceAppWidget() {
         ) {
             Text(
                 text = label,
-                style = TextStyle(color = palette.muted, fontSize = 12.sp, textAlign = textAlign),
+                style = TextStyle(color = palette.muted, fontSize = 13.sp, textAlign = textAlign),
             )
+            Spacer(modifier = GlanceModifier.height(4.dp))
             Text(
                 text = if (masked) {
                     "•••• (%+.2f%%)".format(pct)
@@ -233,9 +240,9 @@ class HoldingsWidget : GlanceAppWidget() {
                     "₹%+,.0f (%+.2f%%)".format(value, pct)
                 },
                 style = TextStyle(
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Medium,
                     fontFamily = NumberFont,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     textAlign = textAlign,
                     color = if (pct >= 0) PositiveColor else NegativeColor,
                 ),
