@@ -1,16 +1,41 @@
+<!-- Flattened version of the adaptive icon, used where a single drawable is needed
+     (e.g. the widget picker preview). Keep in sync with ic_launcher_foreground/background. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <path android:pathData="M20,0h68a20,20 0 0 1 20,20v68a20,20 0 0 1 -20,20h-68a20,20 0 0 1 -20,-20v-68a20,20 0 0 1 20,-20z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108">
+                <item
+                    android:offset="0"
+                    android:color="#FF3D5AFE" />
+                <item
+                    android:offset="1"
+                    android:color="#FF1A2FD0" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <path
-        android:fillColor="#1B5E20"
-        android:pathData="M0,0h108v108h-108z" />
+        android:pathData="M34,76 L34,58"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="12"
+        android:strokeLineCap="round" />
     <path
-        android:fillColor="#00000000"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M28,72 L46,46 L60,60 L80,32" />
+        android:pathData="M54,76 L54,47"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="12"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M74,76 L74,36"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="12"
+        android:strokeLineCap="round" />
 </vector>
