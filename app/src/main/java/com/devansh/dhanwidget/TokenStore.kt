@@ -22,12 +22,27 @@ class TokenStore(context: Context) {
         get() = prefs.getString(KEY_ACCESS_TOKEN, null)
         set(value) = prefs.edit().putString(KEY_ACCESS_TOKEN, value).apply()
 
+    var clientId: String?
+        get() = prefs.getString(KEY_CLIENT_ID, null)
+        set(value) = prefs.edit().putString(KEY_CLIENT_ID, value).apply()
+
+    var appId: String?
+        get() = prefs.getString(KEY_APP_ID, null)
+        set(value) = prefs.edit().putString(KEY_APP_ID, value).apply()
+
+    var appSecret: String?
+        get() = prefs.getString(KEY_APP_SECRET, null)
+        set(value) = prefs.edit().putString(KEY_APP_SECRET, value).apply()
+
     var amoledTheme: Boolean
         get() = prefs.getBoolean(KEY_AMOLED_THEME, false)
         set(value) = prefs.edit().putBoolean(KEY_AMOLED_THEME, value).apply()
 
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
+        private const val KEY_CLIENT_ID = "client_id"
+        private const val KEY_APP_ID = "app_id"
+        private const val KEY_APP_SECRET = "app_secret"
         private const val KEY_AMOLED_THEME = "amoled_theme"
     }
 }

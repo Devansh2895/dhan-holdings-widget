@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -47,21 +48,126 @@
                 android:letterSpacing="0.1"
                 android:layout_marginBottom="12dp" />
 
-            <Button
-                android:id="@+id/getTokenButton"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/authTabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#3D5AFE"
-                android:textColor="#FFFFFF"
-                android:text="Get Token from Dhan" />
+                app:tabIndicatorColor="#3D5AFE"
+                app:tabSelectedTextColor="#3D5AFE"
+                app:tabMode="fixed">
 
-            <EditText
-                android:id="@+id/tokenField"
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login with Dhan" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manual Token" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <LinearLayout
+                android:id="@+id/loginTabContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Client ID"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <EditText
+                    android:id="@+id/clientIdField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Client ID"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="App ID"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <EditText
+                    android:id="@+id/appIdField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="App ID"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="App Secret"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <EditText
+                    android:id="@+id/appSecretField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="App Secret"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/loginButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="#3D5AFE"
+                    android:textColor="#FFFFFF"
+                    android:text="Login with Dhan" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/manualTabContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_marginTop="16dp"
-                android:hint="Access Token"
-                android:inputType="textMultiLine" />
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/getTokenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#3D5AFE"
+                    android:textColor="#FFFFFF"
+                    android:text="Get Token from Dhan" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Access Token"
+                    android:textSize="12sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <EditText
+                    android:id="@+id/tokenField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Access Token"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/saveTokenButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="#3D5AFE"
+                    android:textColor="#FFFFFF"
+                    android:text="Save" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -89,14 +195,5 @@
                 android:trackTint="#663D5AFE"
                 android:text="AMOLED Black Theme" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:backgroundTint="#3D5AFE"
-            android:textColor="#FFFFFF"
-            android:text="Save" />
     </LinearLayout>
 </ScrollView>
