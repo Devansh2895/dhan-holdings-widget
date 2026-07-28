@@ -19,6 +19,8 @@ import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
+import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.currentState
@@ -80,6 +82,7 @@ class HoldingsWidget : GlanceAppWidget() {
         val amoled = prefs[WidgetKeys.AMOLED] ?: false
         val refreshing = prefs[WidgetKeys.REFRESHING] ?: false
         val viewMode = prefs[WidgetKeys.VIEW] ?: "STOCKS"
+        val topView = prefs[WidgetKeys.TOP] ?: false
         val summaries = prefs[WidgetKeys.SUMMARIES]?.let { Json.decodeFromString<StoredSummaries>(it) }
         val summary = summaries?.let { if (viewMode == "STOCKS") it.stocks else it.etfs }
 
@@ -105,7 +108,8 @@ class HoldingsWidget : GlanceAppWidget() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = if (viewMode == "STOCKS") "Stocks" else "ETFs",
+                    text = bucketLabel(viewMode, topView),
+                    maxLines = 1,
                     style = TextStyle(
                         fontWeight = FontWeight.Medium,
                         fontFamily = NumberFont,
@@ -119,42 +123,55 @@ class HoldingsWidget : GlanceAppWidget() {
                     style = TextStyle(color = palette.muted, fontSize = 12.sp),
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
-                Image(
-                    provider = ImageProvider(R.drawable.ic_swap),
-                    contentDescription = "Switch Stocks/ETFs",
-                    modifier = GlanceModifier
-                        .size(24.dp)
-                        .clickable(
-                            actionRunCallback<SetViewAction>(
-                                actionParametersOf(ViewModeKey to if (viewMode == "STOCKS") "ETF" else "STOCKS"),
-                            ),
-                        ),
-                    colorFilter = ColorFilter.tint(AccentColor),
-                )
-                Spacer(modifier = GlanceModifier.width(14.dp))
-                Image(
-                    provider = ImageProvider(if (masked) R.drawable.ic_eye_off else R.drawable.ic_eye),
-                    contentDescription = "Show or hide values",
-                    modifier = GlanceModifier
-                        .size(24.dp)
-                        .clickable(actionRunCallback<ToggleMaskAction>()),
-                    colorFilter = ColorFilter.tint(palette.onBackground),
-                )
-                Spacer(modifier = GlanceModifier.width(14.dp))
-                if (refreshing) {
-                    CircularProgressIndicator(
-                        modifier = GlanceModifier.size(20.dp),
-                        color = AccentColor,
-                    )
-                } else {
+                // Icons live in their own Row: Glance drops children past the 10th, and the flat
+                // header hit that limit once the fourth icon was added.
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
-                        provider = ImageProvider(R.drawable.ic_refresh),
-                        contentDescription = "Refresh",
+                        provider = ImageProvider(R.drawable.ic_trending),
+                        contentDescription = "Show top 5 returns",
                         modifier = GlanceModifier
                             .size(24.dp)
-                            .clickable(actionRunCallback<RefreshAction>()),
+                            .clickable(actionRunCallback<ToggleTopAction>()),
+                        colorFilter = ColorFilter.tint(if (topView) AccentColor else palette.onBackground),
+                    )
+                    Spacer(modifier = GlanceModifier.width(14.dp))
+                    Image(
+                        provider = ImageProvider(R.drawable.ic_swap),
+                        contentDescription = "Switch Stocks/ETFs",
+                        modifier = GlanceModifier
+                            .size(24.dp)
+                            .clickable(
+                                actionRunCallback<SetViewAction>(
+                                    actionParametersOf(ViewModeKey to if (viewMode == "STOCKS") "ETF" else "STOCKS"),
+                                ),
+                            ),
+                        colorFilter = ColorFilter.tint(AccentColor),
+                    )
+                    Spacer(modifier = GlanceModifier.width(14.dp))
+                    Image(
+                        provider = ImageProvider(if (masked) R.drawable.ic_eye_off else R.drawable.ic_eye),
+                        contentDescription = "Show or hide values",
+                        modifier = GlanceModifier
+                            .size(24.dp)
+                            .clickable(actionRunCallback<ToggleMaskAction>()),
                         colorFilter = ColorFilter.tint(palette.onBackground),
                     )
+                    Spacer(modifier = GlanceModifier.width(14.dp))
+                    if (refreshing) {
+                        CircularProgressIndicator(
+                            modifier = GlanceModifier.size(20.dp),
+                            color = AccentColor,
+                        )
+                    } else {
+                        Image(
+                            provider = ImageProvider(R.drawable.ic_refresh),
+                            contentDescription = "Refresh",
+                            modifier = GlanceModifier
+                                .size(24.dp)
+                                .clickable(actionRunCallback<RefreshAction>()),
+                            colorFilter = ColorFilter.tint(palette.onBackground),
+                        )
+                    }
                 }
             }
 
@@ -176,6 +193,7 @@ class HoldingsWidget : GlanceAppWidget() {
                     modifier = GlanceModifier.padding(top = 12.dp),
                     style = TextStyle(color = palette.muted),
                 )
+                topView -> TopReturns(summary.top, masked, palette)
                 else -> Column(modifier = GlanceModifier.fillMaxWidth().padding(top = 18.dp)) {
                     Text(
                         text = if (masked) "•  •  •  •  •  •  •" else "₹%,.0f".format(summary.currentValue),
@@ -208,6 +226,48 @@ class HoldingsWidget : GlanceAppWidget() {
                             modifier = GlanceModifier.defaultWeight(),
                         )
                     }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TopReturns(top: List<HoldingReturn>, masked: Boolean, palette: Palette) {
+        if (top.isEmpty()) {
+            Text(
+                text = "No priced holdings — tap refresh",
+                modifier = GlanceModifier.padding(top = 12.dp),
+                style = TextStyle(color = palette.muted),
+            )
+            return
+        }
+        LazyColumn(modifier = GlanceModifier.fillMaxSize().padding(top = 10.dp)) {
+            items(top) { row ->
+                Row(
+                    modifier = GlanceModifier.fillMaxWidth().padding(vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = row.symbol,
+                        maxLines = 1,
+                        modifier = GlanceModifier.defaultWeight(),
+                        style = TextStyle(fontSize = 13.sp, color = palette.onBackground),
+                    )
+                    Text(
+                        text = if (masked) {
+                            "•  •  •  • (%+.2f%%)".format(row.pnlPct)
+                        } else {
+                            "₹%+,.0f (%+.2f%%)".format(row.pnl, row.pnlPct)
+                        },
+                        maxLines = 1,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = NumberFont,
+                            fontSize = 13.sp,
+                            textAlign = TextAlign.End,
+                            color = if (row.pnlPct >= 0) PositiveColor else NegativeColor,
+                        ),
+                    )
                 }
             }
         }
@@ -249,6 +309,11 @@ class HoldingsWidget : GlanceAppWidget() {
             )
         }
     }
+}
+
+private fun bucketLabel(viewMode: String, topView: Boolean): String {
+    val bucket = if (viewMode == "STOCKS") "Stocks" else "ETFs"
+    return if (topView) "Top 5 $bucket" else bucket
 }
 
 private fun timeLabel(millis: Long): String =

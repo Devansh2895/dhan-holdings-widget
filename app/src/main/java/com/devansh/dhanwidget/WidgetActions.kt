@@ -42,6 +42,15 @@ suspend fun requestWidgetRefresh(context: Context) {
     WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<RefreshWorker>().build())
 }
 
+class ToggleTopAction : ActionCallback {
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        updateAppWidgetState(context, glanceId) { prefs ->
+            prefs[WidgetKeys.TOP] = !(prefs[WidgetKeys.TOP] ?: false)
+        }
+        HoldingsWidget().update(context, glanceId)
+    }
+}
+
 class ToggleMaskAction : ActionCallback {
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         updateAppWidgetState(context, glanceId) { prefs ->

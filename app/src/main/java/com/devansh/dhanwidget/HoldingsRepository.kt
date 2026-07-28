@@ -5,11 +5,20 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class HoldingReturn(
+    val symbol: String,
+    val pnl: Double,
+    val pnlPct: Double,
+)
+
+@Serializable
 data class PortfolioSummary(
     val currentValue: Double,
     val investedValue: Double,
     val prevCloseValue: Double,
     val holdingsCount: Int,
+    /** Best-performing positions by total return %, descending. Defaulted so older stored JSON still decodes. */
+    val top: List<HoldingReturn> = emptyList(),
 ) {
     val dayChangePct: Double
         get() = if (prevCloseValue == 0.0) 0.0 else (currentValue - prevCloseValue) / prevCloseValue * 100
@@ -51,20 +60,34 @@ class HoldingsRepository(
             var invested = 0.0
             var prevClose = 0.0
             var count = 0
+            val returns = mutableListOf<HoldingReturn>()
             rows.filter { (h, _) -> h.isin.startsWith("INF") == isEtf }.forEach { (h, meta) ->
                 val positionCost = h.avgCostPrice * h.totalQty
                 invested += positionCost
                 count++
                 if (meta != null) {
-                    current += meta.regularMarketPrice * h.totalQty
+                    val positionValue = meta.regularMarketPrice * h.totalQty
+                    current += positionValue
                     prevClose += meta.prevClose * h.totalQty
+                    // Positions with a failed quote are left out of the ranking: their cost-basis
+                    // fallback would show a fake 0.00% and sit mid-table.
+                    if (positionCost > 0) {
+                        val pnl = positionValue - positionCost
+                        returns += HoldingReturn(h.tradingSymbol, pnl, pnl / positionCost * 100)
+                    }
                 } else {
                     // Quote fetch failed for this symbol — fall back to cost basis so it doesn't skew % change.
                     current += positionCost
                     prevClose += positionCost
                 }
             }
-            return PortfolioSummary(current, invested, prevClose, count)
+            return PortfolioSummary(
+                current,
+                invested,
+                prevClose,
+                count,
+                top = returns.sortedByDescending { it.pnlPct }.take(5),
+            )
         }
 
         return StoredSummaries(
